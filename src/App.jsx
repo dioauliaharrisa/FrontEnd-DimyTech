@@ -7,12 +7,15 @@ function App() {
   const [error0001, setError0001] = useState(false);
 
   useEffect(() => {
-    console.log(`jalannnnnn`);
-    if (!error0001) {
+    if (error0001) {
       setTimeout(() => {
-        setError0001(false);
+        setError0001((x) => (x = false));
       }, 3000);
     }
+  }, [error0001]);
+
+  useEffect(() => {
+    console.log(error0001);
   }, [error0001]);
 
   const handleAddNewRow = () => {
@@ -34,17 +37,14 @@ function App() {
 
   const handleOnChange = (event, index) => {
     const { value, name } = event.target;
+
+    console.log(value, 666, name);
+    if (value < 1 && name == "quantity") {
+      return setError0001((value) => (value = true));
+    }
     const newForm = [...form];
 
-    console.log(newForm);
-
     // validate if there is 0 on quantity
-    newForm.forEach((e) => {
-      console.log(parseInt(e.quantity));
-      if (parseInt(e.quantity) == "0") {
-        return setError0001((value) => (value = true));
-      }
-    });
 
     newForm[index][name] = value;
     newForm[index]["total"] =
@@ -56,9 +56,7 @@ function App() {
     const newGrandTotal = newForm.reduce(sumTotal, 0);
 
     setForm(newForm);
-    setGrandTotal(
-      (previousGrandTotal) => (previousGrandTotal = newGrandTotal)
-    );
+    setGrandTotal((previousGrandTotal) => (previousGrandTotal = newGrandTotal));
   };
   return (
     <div className="App">
@@ -66,7 +64,7 @@ function App() {
         onClick={() => {
           handleAddNewRow();
         }}
-        className="bg-gray-500 hover:bg-gray-700 text-white font-bold py-2 px-4 rounded"
+        className="p-3 m-3 bg-gray-500 hover:bg-gray-700 text-white font-bold py-2 px-4 rounded"
       >
         New
       </button>
@@ -74,7 +72,10 @@ function App() {
       {error0001 && <div>GA BOLEH KUANTITASNYA 0 YA!</div>}
 
       {form.map((element, index) => (
-        <div className="grid grid-cols-5" key={index}>
+        <div
+          className="grid grid-cols-5 justify-content-center align-center"
+          key={index}
+        >
           <DioInputBar
             dioOnChange={handleOnChange}
             dioValue={form[index].productName}
@@ -115,6 +116,7 @@ function App() {
           />
           {index !== 0 && (
             <button
+              className=" p-1 m-5 bg-red-500 rounded-xl hover:bg-red-300 font-bold text-gray-200 border-orange-300"
               onClick={() => {
                 handleDeleteRow(index);
               }}
@@ -126,6 +128,7 @@ function App() {
       ))}
       <div className="grid grid-cols-5">
         <DioInputBar
+          className="col-span-5"
           // dioOnChange={handleGrandTotalOnChange}
           dioValue={grandTotal}
           dioName={"grandTotal"}
